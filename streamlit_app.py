@@ -7,7 +7,23 @@ st.info('이 앱은 머신러닝 모델을 활용하여 실시간으로 서버 �
 
 with st.expander('Data'):
   st.write('**Raw Data**')
+   
   df = pd.read_csv('https://raw.githubusercontent.com/roundy00/keroro-machinelearning/refs/heads/master/Server-Machine-Dataset-main/processed_csv/machine-1-1/machine-1-1_test.csv')
+  new_column_names = [
+    'cpu_r', 'load_1', 'load_5', 'load_15', 'mem_shmem', 'mem_u', 'mem_u_e', 'total_mem',
+    'disk_q', 'disk_r', 'disk_rb', 'disk_svc', 'disk_u', 'disk_w', 'disk_wa', 'disk_wb',
+    'si', 'so', 'eth1_fi', 'eth1_fo', 'eth1_pi', 'eth1_po', 'tcp_tw', 'tcp_use',
+    'active_opens', 'curr_estab', 'in_errs', 'in_segs', 'listen_overflows', 'out_rsts',
+    'out_segs', 'passive_opens', 'retransegs', 'tcp_timeouts', 'udp_in_dg', 'udp_out_dg',
+    'udp_rcv_buf_errs', 'udp_snd_buf_errs']
+  rename_dict = {f'col_{i}': new_column_names[i] for i in range(len(new_column_names))}
+  df.rename(columns=rename_dict, inplace=True)
+  priority_columns = [
+    'timestamp', 'cpu_r', 'load_1', 'load_5', 'mem_u',
+    'disk_q', 'disk_r', 'disk_w', 'disk_u', 'eth1_fi', 'eth1_fo','tcp_timeouts']
+
+  priority_columns_test = priority_columns + ['label']
+  df = df[priority_columns_test]
   df
 
   st.write('**Feature**')
