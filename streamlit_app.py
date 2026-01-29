@@ -44,5 +44,11 @@ with st.sidebar:
                     '3-1', '3-2', '3-3', '3-4', '3-5', '3-6', '3-7', '3-8', '3-9', '3-10', '3-11']
   selected_machine = st.sidebar.selectbox('대상 머신 선택', [f'machine-{i}' for i in machine_num])
   model_type = st.sidebar.radio('분석 모델 종류', ["ML (RandomForest)","ML (XGBoost)","DL (OmniAnomaly)", "DL (LSTM-NDT)", "DL (IMDiffusion)", "DL (Anomaly Transformer)", "DL (Pi-Transformer)"])
-  time_range = st.select_slider('분석할 시간 범위', options = range(0, len(df)), value = (0,len(df)-1))
-  
+  time_range = st.select_slider('분석할 시간 범위', options = range(0, len(df)), value = (15000,22000))
+
+# 메인 페이지에 현재 선택 정보 보여주기
+selected_info = {'machine':selected_machine,
+                 'model':model_type,
+                 'time':time_range}
+input_info = pd.DataFrame(selected_info, index=False)
+input_info
