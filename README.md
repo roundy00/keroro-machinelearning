@@ -10,9 +10,11 @@ This is a machine learning app.
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/streamlit/app-starter-kit?quickstart=1)
 
-## Section Heading
+## Data Info
 
-This is filler text, please replace this with text for this section.
+Data Source: CSVSSMD Dataset via Kaggle (https://www.kaggle.com/datasets/imenbenamar1/csvssmd)
+
+License: Community Data License Agreement - Permissive - Version 2.0 (CDLA-Permissive-2.0)
 
 ## Further Reading
 
