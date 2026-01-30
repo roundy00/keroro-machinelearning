@@ -62,4 +62,6 @@ with st.expander('Data'):
 
 with st.expander('Feature visualization'):
   st.line_chart(data=df, x='timestamp', y='cpu_r')
-
+  st.line_chart(data=df, x='timestamp', y='disk_r')
+  st.line_chart(data=df, x='timestamp', y='mem_u')
+  st.line_chart(data=df, x='timestamp', y='tcp_timeouts')
