@@ -76,7 +76,7 @@ model = selected_model_dict[model_type]
 model.fit(X, y)
 
 # 예측
-display_df['pred'] = model.predict(df_input)
+display_df['pred'] = model.predict(display_df)
 
 # 예측값 시각화
 st.write("### 🚨 이상 탐지 결과 (Prediction)")
