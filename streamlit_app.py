@@ -61,7 +61,7 @@ with st.expander('Data'):
   y = df.label
 
 with st.expander('Feature visualization'):
-  st.line_chart(data=df, x='timestamp', y='cpu_r')
-  st.line_chart(data=df, x='timestamp', y='disk_r')
-  st.line_chart(data=df, x='timestamp', y='mem_u')
-  st.line_chart(data=df, x='timestamp', y='tcp_timeouts')
+  st.line_chart(data=df, x='timestamp', y='cpu_r', width = 'content')
+  st.line_chart(data=df, x='timestamp', y='disk_r', width = 'content')
+  st.line_chart(data=df, x='timestamp', y='mem_u', width = 'content')
+  st.line_chart(data=df, x='timestamp', y='tcp_timeouts', width = 'content')
