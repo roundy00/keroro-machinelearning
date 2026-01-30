@@ -76,10 +76,11 @@ model = selected_model_dict[model_type]
 model.fit(X, y)
 
 # 예측
-df_input['pred'] = model.predict(df_input)
+display_df['pred'] = model.predict(df_input)
 
 # 예측값 시각화
-st.line_chart(data=display_df, x = 'timestamp', y = 'pred')
+st.write("### 🚨 이상 탐지 결과 (Prediction)")
+st.line_chart(data=display_df, x = 'timestamp', y = 'pred', color='#FF0000')
 
 with st.expander('Data'):
   st.write('**Raw Data**')
