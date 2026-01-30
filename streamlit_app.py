@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+from sklearn. ensemble import RandomForestClassifier
+from xgboost import XGBClassifier
 import plotly.express as px
 
 # 페이지 설정 (탭 이름, 아이콘 등)
@@ -22,7 +24,9 @@ with st.sidebar:
   selected_machine = st.sidebar.selectbox('대상 머신 선택', [f'machine-{i}' for i in machine_num])
 
 # Column Rename (Data Preprocess)
-df = pd.read_csv(f'https://raw.githubusercontent.com/roundy00/keroro-machinelearning/refs/heads/master/Server-Machine-Dataset-main/processed_csv/{selected_machine}/{selected_machine}_test.csv')
+df_train = pd.read_csv(f'https://raw.githubusercontent.com/roundy00/keroro-machinelearning/refs/heads/master/Server-Machine-Dataset-main/processed_csv/{selected_machine}/{selected_machine}_test.csv')
+df_input = pd.read_csv(f'https://raw.githubusercontent.com/roundy00/keroro-dashboard/refs/heads/master/Server-Machine-Dataset-main/processed_csv/{selected_machine}/{selected_machine}_train.csv')
+
 new_column_names = [
   'cpu_r', 'load_1', 'load_5', 'load_15', 'mem_shmem', 'mem_u', 'mem_u_e', 'total_mem',
   'disk_q', 'disk_r', 'disk_rb', 'disk_svc', 'disk_u', 'disk_w', 'disk_wa', 'disk_wb',
@@ -31,23 +35,33 @@ new_column_names = [
   'out_segs', 'passive_opens', 'retransegs', 'tcp_timeouts', 'udp_in_dg', 'udp_out_dg',
   'udp_rcv_buf_errs', 'udp_snd_buf_errs']
 rename_dict = {f'col_{i}': new_column_names[i] for i in range(len(new_column_names))}
-df.rename(columns=rename_dict, inplace=True)
+
+df_train.rename(columns=rename_dict, inplace=True)
+df_input.rename(columns=rename_dict, inplace=True)
+
 priority_columns = [
   'timestamp', 'cpu_r', 'load_1', 'load_5', 'mem_u',
   'disk_q', 'disk_r', 'disk_w', 'disk_u', 'eth1_fi', 'eth1_fo','tcp_timeouts']
 
-priority_columns_test = priority_columns + ['label']
-df = df[priority_columns_test]
-X = df.drop(labels = 'label', axis=1)
-y = df.label
+priority_columns_train = priority_columns + ['label']
+df_train = df_train[priority_columns_train]
+df_input = df_input[priority_columns]
+
+X = df_train.drop(labels = 'label', axis=1) # 학습-문제데이터
+y = df_train.label # 학습-정답데이터
+
 
 # Data Preparation : Model selection, time range setting
 with st.sidebar:
   model_type = st.sidebar.radio('분석 모델 종류', ["ML (RandomForest)","ML (XGBoost)","DL (OmniAnomaly)", "DL (LSTM-NDT)", "DL (IMDiffusion)", "DL (Anomaly Transformer)", "DL (Pi-Transformer)"])
-  time_range = st.select_slider('분석할 시간 범위', options = range(0, len(df)), value = (15000,22000))
+  time_range = st.select_slider('분석할 시간 범위', options = range(0, len(df_input)), value = (0,len(df_input)-1))
 
+  scale_pos_weight = (len(y) - sum(y)) / sum(y)
+  selected_model_dict = {"ML (RandomForest)" : RandomForestClassifier(class_weight='balanced',random_state = 42),
+                         "ML (XGBoost)": XGBClassifier(scale_pos_weight=scale_pos_weight, random_state=42)}
+  
 # 슬라이더에서 선택된 범위만큼 데이터 자르기
-display_df = df.iloc[time_range[0] : time_range[1] + 1]
+display_df = df_input.iloc[time_range[0] : time_range[1] + 1]
 
 # 메인 페이지에 현재 선택 정보 보여주기
 selected_info = {'machine':selected_machine,
@@ -57,9 +71,19 @@ selected_info = {'machine':selected_machine,
 input_info = pd.DataFrame([selected_info])
 st.dataframe(input_info, hide_index=True)
 
+# 모델 학습
+model = selected_model_dict[model_type]
+model.fit(X, y)
+
+# 예측
+df_input['pred'] = model.predict(df_input)
+
+# 예측값 시각화
+st.line_chart(data=display_df, x = 'timestamp', y = 'pred')
+
 with st.expander('Data'):
   st.write('**Raw Data**')
-  df
+  df_input
 
 with st.expander('Feature visualization'):
     # 시각화할 컬럼들 리스트
