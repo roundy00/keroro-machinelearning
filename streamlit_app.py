@@ -38,6 +38,11 @@ priority_columns = [
 
 priority_columns_test = priority_columns + ['label']
 df = df[priority_columns_test]
+X = df.drop(labels = 'label', axis=1)
+y = df.label
+
+# 슬라이더에서 선택된 범위만큼 데이터 자르기
+display_df = df.iloc[time_range[0] : time_range[1] + 1]
 
 # Data Preparation : Model selection, time range setting
 with st.sidebar:
@@ -55,14 +60,6 @@ st.dataframe(input_info, hide_index=True)
 with st.expander('Data'):
   st.write('**Raw Data**')
   df
-
-  st.write('**Feature**')
-  X = df.drop(labels = 'label', axis=1)
-  X
-  y = df.label
-
-# 슬라이더에서 선택된 범위만큼 데이터 자르기
-display_df = df.iloc[time_range[0] : time_range[1] + 1]
 
 with st.expander('Feature visualization'):
     # 시각화할 컬럼들 리스트
