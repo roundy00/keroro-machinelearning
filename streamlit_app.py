@@ -41,13 +41,13 @@ df = df[priority_columns_test]
 X = df.drop(labels = 'label', axis=1)
 y = df.label
 
-# 슬라이더에서 선택된 범위만큼 데이터 자르기
-display_df = df.iloc[time_range[0] : time_range[1] + 1]
-
 # Data Preparation : Model selection, time range setting
 with st.sidebar:
   model_type = st.sidebar.radio('분석 모델 종류', ["ML (RandomForest)","ML (XGBoost)","DL (OmniAnomaly)", "DL (LSTM-NDT)", "DL (IMDiffusion)", "DL (Anomaly Transformer)", "DL (Pi-Transformer)"])
   time_range = st.select_slider('분석할 시간 범위', options = range(0, len(df)), value = (15000,22000))
+
+# 슬라이더에서 선택된 범위만큼 데이터 자르기
+display_df = df.iloc[time_range[0] : time_range[1] + 1]
 
 # 메인 페이지에 현재 선택 정보 보여주기
 selected_info = {'machine':selected_machine,
