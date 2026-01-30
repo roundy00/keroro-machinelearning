@@ -80,7 +80,15 @@ display_df['pred'] = model.predict(display_df)
 
 # 예측값 시각화
 st.write("### 🚨 이상 탐지 결과 (Prediction)")
-st.line_chart(data=display_df, x = 'timestamp', y = 'pred', color='#FF0000')
+pred_fig = px.line(display_df, x = 'timestamp', y = 'pred')
+pred_fig.update_traces(line_color='#FF0000', line_width=2)
+pred_fig.update_layout(
+    xaxis=dict(fixedrange=True),
+    yaxis=dict(fixedrange=True),
+    dragmode=False
+)
+
+st.plotly_chart(pred_fig, use_container_width=True, config={'displayModeBar': False})
 
 with st.expander('Data'):
   st.write('**Raw Data**')
