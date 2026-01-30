@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import plotly.express as px
 
 # 페이지 설정 (탭 이름, 아이콘 등)
 st.set_page_config(page_title="실시간 서버 모니터링",  # 원하는 이름으로 변경
@@ -60,8 +61,24 @@ with st.expander('Data'):
   X
   y = df.label
 
+# 슬라이더에서 선택된 범위만큼 데이터 자르기
+display_df = df.iloc[time_range[0] : time_range[1] + 1]
+
 with st.expander('Feature visualization'):
-  st.line_chart(data=df, x='timestamp', y='cpu_r', width = 'content')
-  st.line_chart(data=df, x='timestamp', y='disk_r', width = 'content')
-  st.line_chart(data=df, x='timestamp', y='mem_u', width = 'content')
-  st.line_chart(data=df, x='timestamp', y='tcp_timeouts', width = 'content')
+    # 시각화할 컬럼들 리스트
+    viz_cols = ['cpu_r', 'disk_r', 'mem_u', 'tcp_timeouts']
+    
+    for col in viz_cols:
+        # 1. Plotly로 라인 차트 생성
+        fig = px.line(display_df, x='timestamp', y=col, title=f'Server {col} Over Time')
+        
+        # 2. 상호작용(줌, 팬) 비활성화 설정
+        fig.update_layout(
+            xaxis=dict(fixedrange=True), # X축 고정
+            yaxis=dict(fixedrange=True), # Y축 고정
+            dragmode=False,               # 마우스 드래그 비활성화
+            hovermode='x'                # 마우스를 올렸을 때 값만 보여줌
+        )
+        
+        # 3. Streamlit에 출력 (config에서 도구 모음도 숨김)
+        st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
